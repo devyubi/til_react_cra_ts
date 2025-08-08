@@ -1,24 +1,22 @@
 # useState
 
-- React 용 변수임 (실제론 리엑트용 변수란건 없지만, 수업 편의성으로 그렇게 부르고있음)
-- set 으로 값을 변화시키면 rerendering 을 함
+- 리액트용 변수이다. (수업편의)
+- set으로 값을 변화시키면 리랜더링을 한다.
 
-## 1. 기본 예제
+## 1. 기본예제
 
-- /src/components 폴더
-- /src/components/Counter.tsx 파일 생성
-
-- 기존 배웠던 문법 실습
+- /src/components 폴더 생성
+- Counter.tsx 파일 생성
 
 ```tsx
 import { useState } from 'react';
 
-// 2번 이상 반복되고, 가독성이 떨어짐
-// 1. type 으로 정의 해보기
+// 2번이상 반복되고, 가독성이 떨어집니다.
+// 1. type 으로 정의해 보자.
 type VoidFunction = () => void;
 type JSXElement = () => JSX.Element;
 
-// 2. interface 로 정의해보기
+// 2. interface 로 정의해 보자
 interface IVoidFunction {
   (): void;
 }
@@ -26,7 +24,7 @@ interface IJSXElement {
   (): JSX.Element;
 }
 
-const Counter: IJSXElement | JSXElement = (): JSX.Element => {
+const Counter: IJSXElement | JSXElement = () => {
   // ts 자리
   const [count, setCount] = useState<number>(0);
 
@@ -53,9 +51,9 @@ const Counter: IJSXElement | JSXElement = (): JSX.Element => {
 export default Counter;
 ```
 
-## 2. 실습 예제 1
+## 2. 실습 예제 1.
 
-- /src/components/NameEditor.tsx 파일 추가
+- /src/components/NameEditor.tsx
 
 ```tsx
 import { ChangeEvent, MouseEvent, useState } from 'react';
@@ -102,9 +100,9 @@ const NameEditor: JSXElement | IJSXElement = () => {
 export default NameEditor;
 ```
 
-## 3. 실습 예제 2
+## 3. 실습 예제 2.
 
-- /src/components/ToggleSwitch.tsx 파일 생성
+- /src/components/ToggleSwitch.tsx
 
 ```tsx
 import { useState } from 'react';
@@ -129,7 +127,7 @@ const ToggleSwitch: IJSXElement | JSXElement = () => {
   // tsx 자리
   return (
     <div>
-      <h2>ToggleSwitch : {isOn ? 'ON' : 'OFF'}</h2>
+      <h2>ToggleSwitch : {isOn ? '밝아요' : '어두워요'}</h2>
       <div>
         <button onClick={handleClick}>토글</button>
       </div>
@@ -140,15 +138,16 @@ const ToggleSwitch: IJSXElement | JSXElement = () => {
 export default ToggleSwitch;
 ```
 
-## 4. 실습 예제 3
+## 4. 실습 예제 3.
 
-- /src/components/User.tsx 파일 생성
+- /src/components/User.tsx
 
 ```tsx
 import { useState } from 'react';
 // 1. type 정의
 type UserType = { age: number; name: string };
 type ClickType = () => void;
+
 // 2. interface 정의
 interface IUser {
   age: number;
@@ -157,11 +156,10 @@ interface IUser {
 interface IClick {
   (): void;
 }
-
 const User = (): JSX.Element => {
   // ts 자리
   const [user, setUser] = useState<UserType | IUser>({ name: '아이유', age: 20 });
-  const handleClick: ClickType | IClick = (): void => {
+  const handleClick: ClickType | IClick = () => {
     setUser({ ...user, age: user.age + 1 });
   };
   // tsx 자리
@@ -179,3 +177,16 @@ const User = (): JSX.Element => {
 
 export default User;
 ```
+
+## 5. 실습 예제 4. (useState 버전 Todo)
+
+- 타입정의를 위한 폴더 : /src/todos/Todotypes.ts 폴더 생성
+
+- 글쓰기 : /src/todos/TodoWrite.tsx
+  - 입력창, 등록버튼
+
+- 글목록 : /src/todos/TodoList.tsx
+
+- 글한개의 아이템 : /src/todos/TodoItem.tsx
+  - 아이디, 제목, 완료여부, 수정버튼, 삭제버튼
+  - 상태 2가지 : 목록상태, 편집상태
