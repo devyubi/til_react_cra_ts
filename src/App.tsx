@@ -13,9 +13,15 @@ function App(): JSX.Element {
     // setTodos(???)
   };
   // todo 목록에서 실행할 함수들
-  const onToggle = (): void => {};
-  const onDelete = (): void => {};
-  const onEdit = (): void => {};
+  const onToggle = (): void => {
+    console.log('onToggle');
+  };
+  const onDelete = (): void => {
+    console.log('onDelete');
+  };
+  const onEdit = (): void => {
+    console.log('onEdit');
+  };
   // tsx 자리
   return (
     <div>

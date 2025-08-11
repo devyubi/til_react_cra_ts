@@ -1,14 +1,17 @@
 import TodoItem from './TodoItem';
 import { TodoType } from './Todotypes';
 
-type TodoListProps = {
+interface TodoListProps {
   todos: TodoType[];
   onToggle: () => void;
   onDelete: () => void;
   onEdit: () => void;
-};
+}
 
 const TodoList = ({ todos, onToggle, onDelete, onEdit }: TodoListProps): JSX.Element => {
+  //ts
+
+  //tsx
   return (
     <div>
       <h2>할일 목록</h2>

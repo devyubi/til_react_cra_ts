@@ -1,13 +1,12 @@
-import { TodoType } from './Todotypes';
-
 type TodoItemProps = {
-  todos: TodoType[];
   onToggle: () => void;
   onDelete: () => void;
   onEdit: () => void;
 };
-
 const TodoItem = ({ onToggle, onDelete, onEdit }: TodoItemProps) => {
+  //ts
+
+  //tsx
   return <div>TodoItem</div>;
 };
 
