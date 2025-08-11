@@ -1,11 +1,4 @@
-import { TodoType } from './Todotypes';
-
-type TodoListProps = {
-  todos: TodoType[];
-  onToggle: () => void;
-  onDelete: () => void;
-  onEdit: () => void;
-};
+import { TodoType } from '../../types/Todotypes';
 
 type TodoWriteProps = {
   setTodos: React.Dispatch<React.SetStateAction<TodoType[]>>;
