@@ -5,7 +5,7 @@ interface TodoListProps {
   todos: TodoType[];
   onToggle: (id: string) => void;
   onDelete: (id: string) => void;
-  onEdit: () => void;
+  onEdit: (id: string, newTitle: string) => void;
 }
 
 const TodoList = ({ todos, onToggle, onDelete, onEdit }: TodoListProps): JSX.Element => {

@@ -6,6 +6,7 @@ import { ITodoType, TodoType } from './types/Todotypes';
 
 // 테스트를 위한 목업 데이터 (/src/api/dummy.ts 추천)
 import { initialTodos } from './components/api/dummy';
+import { title } from 'process';
 // const initialTodos: TodoType[] = [];
 
 function App(): JSX.Element {
@@ -14,8 +15,10 @@ function App(): JSX.Element {
   const [todos, setTodos] = useState<(ITodoType | TodoType)[]>(initialTodos);
 
   // todos 를 업데이트 하는 함수
-  const handleTodoUpdate = (): void => {
-    // setTodos(???)
+  const handleTodoUpdate = (newTodo: TodoType): void => {
+    setTodos(prev => [newTodo, ...prev]);
+    // const arr: TodoType[] = [newTodo, ...todos];
+    // setTodos(arr);
   };
   // todo 목록에서 실행할 함수들
   const onToggle = (id: string): void => {
@@ -32,8 +35,15 @@ function App(): JSX.Element {
     const arr: TodoType[] = todos.filter(todo => todo.id !== id);
     setTodos(arr);
   };
-  const onEdit = (): void => {
-    console.log('onEdit');
+  const onEdit = (id: string, newTitle: string): void => {
+    // console.log('onEdit', id);
+    // console.log('onEdit newTitle', newTitle);
+    // ID 와 새로운 타이틀을 알 수 있다
+    // ID를 이용해서 해당 타이틀을 수정하고 업데이트 해보자
+    const arr: TodoType[] = todos.map(item =>
+      item.id === id ? { ...item, title: newTitle } : item,
+    );
+    setTodos(arr);
   };
   // tsx 자리
   return (
