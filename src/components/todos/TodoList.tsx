@@ -4,12 +4,12 @@ import TodoItem from './TodoItem';
 const TodoList = (): JSX.Element => {
   const { todos } = useTodoState();
   return (
-    <div>
+    <div className="text-xl font-semibold">
       <h2>할일목록</h2>
       {todos.length === 0 ? (
-        <p>목록이 없습니다.</p>
+        <p className='mt-2 text-neutral-500'>목록이 없습니다.</p>
       ) : (
-        <ul>
+        <ul className='mt-4 space-y-2'>
           {todos.map(item => (
             <TodoItem key={item.id} todo={item} />
           ))}
