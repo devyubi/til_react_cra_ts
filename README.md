@@ -1,156 +1,430 @@
-# React 18 / TypeScript / ESLint 8 / Prettier 셋팅
+# react-router-dom
 
-## 1. CRA / TypeScript / React 18 프로젝트 생성
+## 1. 설치
 
-- 프로젝트 생성
-
-```bash
-npx create-react-app 프로젝트명소문자 --template typescript
-npx create-react-app . --template typescript
-```
-
-- 18 버전으로 마이그레이션
+- vercel 에서는 v7.0 최신 버전 오류
+- 설치는 v6 를 설치하자.
 
 ```bash
-npm install react@18.2.0 react-dom@18.2.0
+npm i react-router-dom@6.30.1
 ```
 
-## 2. ESLint / Prettier 호환 패키지 설치
+## 2. 폴더 및 페이지 구성
 
-```bash
-npm install -D \
-eslint@8.56.0 \
-@typescript-eslint/eslint-plugin@5.62.0 \
-@typescript-eslint/parser@5.62.0 \
-eslint-plugin-react@7.33.2 \
-eslint-plugin-react-hooks@4.6.0 \
-eslint-plugin-jsx-a11y@6.7.1 \
-eslint-plugin-prettier@5.1.3 \
-eslint-config-prettier@9.1.0 \
-prettier@3.2.5
+- /src/pages 폴더 생성
+
+### 2.1. Home.tsx
+
+### 2.2. TodoReadPage.tsx
+
+```tsx
+import TodoList from '../components/todos/TodoList';
+import { NavLink } from 'react-router-dom';
+
+function TodoReadPage() {
+  return (
+    <section className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">할일 목록</h2>
+        <NavLink
+          to={'/todos/write'}
+          className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        >
+          새 할일 작성
+        </NavLink>
+      </div>
+      <div className="rounded-xl2 shadow-card space-y-6 bg-white p-6 dark:bg-neutral-800">
+        <TodoList />
+      </div>
+    </section>
+  );
+}
+
+export default TodoReadPage;
 ```
 
-## 3. `.eslintrc.json` 파일 생성
+### 2.3. TodoWritePage.tsx
 
-```json
-{
-  "root": true,
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "ecmaVersion": 2020,
-    "sourceType": "module",
-    "ecmaFeatures": { "jsx": true }
-  },
-  "env": {
-    "browser": true,
-    "es2021": true,
-    "node": true
-  },
-  "plugins": ["react", "react-hooks", "jsx-a11y", "@typescript-eslint", "prettier"],
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "plugin:jsx-a11y/recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended"
-  ],
-  "rules": {
-    "react/react-in-jsx-scope": "off",
-    "prettier/prettier": "warn",
-    "@typescript-eslint/no-unused-vars": "warn"
-  },
-  "settings": {
-    "react": {
-      "version": "detect"
+```tsx
+import TodoWrite from '../components/todos/TodoWrite';
+import { NavLink } from 'react-router-dom';
+
+function TodoWritePage() {
+  return (
+    <section className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">할일 작성</h2>
+        <NavLink
+          to={'/todos/read'}
+          className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        >
+          목록
+        </NavLink>
+      </div>
+      <div className="rounded-xl2 shadow-card space-y-6 bg-white p-6 dark:bg-neutral-800">
+        <TodoWrite />
+      </div>
+    </section>
+  );
+}
+
+export default TodoWritePage;
+```
+
+### 2.4. TodoEditPage.tsx
+
+```tsx
+import { useEffect, useState } from 'react';
+import { useTodoActions, useTodoState } from '../context/todo/hooks';
+import { NavLink, useNavigate, useParams } from 'react-router-dom';
+
+function TodoEditPage() {
+  const navigate = useNavigate();
+  // ts 자리
+  const { id } = useParams<{ id: string }>();
+  const { todos } = useTodoState();
+  const { editTodo } = useTodoActions();
+  const result = todos.find(item => item.id === id);
+  // 편집 중인 타이틀 보관 state
+  const [title, setTitle] = useState<string>('');
+  useEffect(() => {
+    if (result) {
+      setTitle(result.title);
     }
+  }, [result]);
+
+  if (!id) {
+    return (
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">잘못된 id 요청입니다.</h2>
+          <NavLink
+            to="/todos/read"
+            className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            목록으로
+          </NavLink>
+        </div>
+      </section>
+    );
   }
+  if (!result) {
+    return (
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">내용을 찾을 수 없습니다.</h2>
+          <NavLink
+            to="/todos/read"
+            className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            목록으로
+          </NavLink>
+        </div>
+      </section>
+    );
+  }
+
+  const handleSave = () => {
+    const trim = title.trim();
+    if (!trim) return;
+    editTodo(result.id, title);
+    navigate('/todos/read');
+  };
+
+  return (
+    <section className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">할일 수정</h2>
+        <NavLink
+          to="/todos/read"
+          className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+        >
+          목록
+        </NavLink>
+      </div>
+
+      <div className="space-y-4 rounded-xl2 bg-white p-6 shadow-card dark:bg-neutral-800">
+        <label
+          htmlFor="todo-title"
+          className="block text-sm text-neutral-600 dark:text-neutral-300"
+        >
+          제목
+        </label>
+        <input
+          className="w-full rounded-lg border border-neutral-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-brand dark:border-neutral-700 dark:bg-neutral-900"
+          type="text"
+          value={title}
+          onChange={e => setTitle(e.target.value)}
+        />
+        <div className="flex items-center gap-2 pt-2">
+          <button
+            className="rounded-md bg-brand px-4 py-2 text-white hover:opacity-90"
+            onClick={handleSave}
+          >
+            저장
+          </button>
+          <NavLink
+            to={`/todos/read`}
+            className="rounded-md border border-neutral-300 px-4 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            취소
+          </NavLink>
+        </div>
+      </div>
+    </section>
+  );
 }
+
+export default TodoEditPage;
 ```
 
-## 4. Prettier 설정 파일
-
-- `.prettierrc` 파일 생성
-
-```
-{
-  "semi": true,
-  "singleQuote": true,
-  "trailingComma": "all",
-  "printWidth": 100,
-  "tabWidth": 2,
-  "arrowParens": "avoid"
-}
-```
-
-## 5. ESLint 검사에서 제외할 부분 설정(필수 사항)
-
-- `.eslintignore`
-
-```
-node_modules
-build
-dist
-```
-
-## 6. VSCode 환경설정
-
-- `.vscode` 폴더 생성
-- `settings.json` 파일 생성
-
-```json
-{
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll": "explicit"
-  },
-  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"]
-}
-```
-
-## 7. `package.json` 에 Lint 검사 실행 스크립트 (선택 사항)
-
-```json
-"scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
-  },
-
- // 해당 내용 추가했음
-"lint": "eslint \"src/**/*.{ts,tsx}\"",
-    "lint:fix": "eslint \"src/**/*.{ts,tsx}\" --fix"
-```
-
-## 8. 테스트 코드 확인
-
-- App.tsx 에서 하단 test 코드 넣어보기
+### 2.5. TodoDetailPage.tsx
 
 ```tsx
-function App() {
-  const unused = 1;
+import { NavLink, useParams } from 'react-router-dom';
+import { useTodoActions, useTodoState } from '../context/todo/hooks';
 
-  return <button tabIndex={'0'}>App</button>;
+function TodoDetailPage() {
+  // http://localhost:3000/todos/id
+  const { id } = useParams<{ id: string }>();
+  // 전체 todos State 를 가져오겠다.
+  const { todos } = useTodoState();
+  const { toggleTodo } = useTodoActions();
+  // id 를 이용해서 해당 상세 내용 가져오기
+  const result = todos.find(item => item.id === id);
+  if (!id) {
+    return (
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">잘못된 id 요청입니다.</h2>
+          <NavLink
+            to="/todos/read"
+            className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            목록으로
+          </NavLink>
+        </div>
+      </section>
+    );
+  }
+  if (!result) {
+    return (
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-semibold">내용을 찾을 수 없습니다.</h2>
+          <NavLink
+            to="/todos/read"
+            className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            목록으로
+          </NavLink>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">할일 상세</h2>
+        <div className="flex items-center gap-2">
+          <NavLink
+            to={`/todos/${result.id}/edit`}
+            className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            수정
+          </NavLink>
+          <NavLink
+            to={'/todos/read'}
+            className="rounded-md border border-neutral-300 px-3 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            목록
+          </NavLink>
+        </div>
+      </div>
+      <div className="space-y-4 rounded-xl bg-white p-6 shadow-card dark:bg-neutral-800">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <div className="text-sm text-neutral-500">ID</div>
+            <div className="font-mono text-neutral-700 dark:text-neutral-300">{result.id}</div>
+          </div>
+          <div>
+            <span
+              className={[
+                'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                result.completed
+                  ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300'
+                  : 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
+              ].join(' ')}
+            >
+              {result.completed ? '완료' : '진행중'}
+            </span>
+          </div>
+
+          <div>
+            <div className="mb-1 text-sm text-neutral-500">제목</div>
+            <div className="text-lg font-medium">{result.title}</div>
+          </div>
+
+          <div className="pt-2">
+            <button
+              onClick={() => toggleTodo(result.id)}
+              className="rounded-md border border-neutral-300 px-4 py-2 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+            >
+              {result.completed ? '완료 취소' : '완료로 표시'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default TodoDetailPage;
+```
+
+### 2.6. NotFound.tsx
+
+### 2.7. Settings.tsx
+
+## 3. 컴포넌트 수정
+
+- /src/components/todo/TodoItem.tsx
+
+```tsx
+import { Link } from 'react-router-dom';
+import { useTodoActions } from '../../context/todo/hooks';
+import { TodoType } from '../../types/todoType';
+
+type TodoItemProps = {
+  todo: TodoType;
+};
+
+const TodoItem = ({ todo }: TodoItemProps) => {
+  // js 자리
+  const { toggleTodo, deleteTodo } = useTodoActions();
+
+  return (
+    <li
+      className={['flex items-center justify-between gap-2 rounded-lg border px-3 py-2'].join(' ')}
+    >
+      <div className="flex w-full items-center gap-3">
+        <input
+          type="checkbox"
+          onChange={() => toggleTodo(todo.id)}
+          checked={todo.completed}
+          className="accent-brand h-4 w-4"
+        />
+        <Link
+          to={`/todos/${todo.id}`}
+          className={[
+            'flex-1',
+            todo.completed
+              ? 'text-neutral-400 line-through'
+              : 'text-neutral-900 dark:text-neutral-100',
+          ].join(' ')}
+        >
+          {todo.title}
+        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to={`/todos/${todo.id}/edit`}
+            className="dark: rounded-md border border-neutral-300 px-3 py-1 hover:bg-neutral-50 dark:border-neutral-700 dark:hover:bg-neutral-800"
+          >
+            수정
+          </Link>
+          <button
+            onClick={() => deleteTodo(todo.id)}
+            className="rounded-md border border-red-300 px-3 py-1 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+          >
+            삭제
+          </button>
+        </div>
+      </div>
+    </li>
+  );
+};
+
+export default TodoItem;
+```
+
+## 4. 라우터 구성
+
+- App.tsx 적용
+- 기본구성
+
+```tsx
+<Router>
+  <Routes>
+    <Route></Route>
+  </Routes>
+</Router>
+```
+
+```tsx
+import { NavLink, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { TodoProvider } from './context/todo/TodoProvider';
+import Home from './pages/Home';
+import NotFound from './pages/NotFound';
+import Settings from './pages/Settings';
+import TodoReadPage from './pages/TodoReadPage';
+import TodoWritePage from './pages/TodoWritePage';
+import TodoDetailPage from './pages/TodoDetailPage';
+import TodoEditPage from './pages/TodoEditPage';
+
+function App(): JSX.Element {
+  // ts 자리
+  const toggleDark = () => {
+    document.documentElement.classList.toggle('dark');
+  };
+  // tsx 자리
+  return (
+    <div className="bg-bg text-fg min-h-screen">
+      <TodoProvider>
+        <Router>
+          {/* 상단메뉴 */}
+          <header className="border-b border-neutral-200 dark:border-neutral-800">
+            <div className="container-app flex items-center gap-4 py-6">
+              <h1 className="flex-1 text-2xl font-bold tracking-tighter">할일 앱 서비스</h1>
+              <nav className="flex items-center gap-2 text-sm">
+                <NavLink to="/">홈</NavLink>
+                <NavLink to="/todos/read">읽기</NavLink>
+                <NavLink to="/todos/write">생성</NavLink>
+                <NavLink to="/settings">설정</NavLink>
+              </nav>
+
+              <button
+                onClick={toggleDark}
+                className="rounded-md bg-black px-3 py-1 text-sm text-white hover:opacity-90 dark:bg-white dark:text-black"
+              >
+                <span className="inline dark:hidden">다크모드</span>
+                <span className="hidden dark:inline">라이트모드</span>
+              </button>
+            </div>
+          </header>
+
+          <main className="container-app py-8">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {/* todos 관련 route ---*/}
+              <Route path="/todos" element={<TodoReadPage />} />
+              <Route path="/todos/read" element={<TodoReadPage />} />
+              <Route path="/todos/write" element={<TodoWritePage />} />
+              <Route path="/todos/:id" element={<TodoDetailPage />} />
+              <Route path="/todos/:id/edit" element={<TodoEditPage />} />
+              {/* todos 관련 route ---- */}
+              <Route path="/settings" element={<Settings />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </main>
+          <footer className="container-app py-8 text-sm text-neutral-500 dark:text-neutral-400">
+            할일 앱 서비스 개발 @ 홍길동
+          </footer>
+        </Router>
+      </TodoProvider>
+    </div>
+  );
 }
 
 export default App;
-```
-
-```tsx
-function App() {
-  const unused = 1;
-
-  return <button tabIndex={0}>App</button>;
-}
-
-export default App;
-```
-
-## 9. ESLint 오류 자동 고침 (제한적)
-
-```bash
-npx eslint src --ext .tsx --fix
 ```
