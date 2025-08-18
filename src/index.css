@@ -2,10 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 글꼴 */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap');
+:root {
+  font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
+}
+body {
+  font-family: 'Noto Sans KR', 'Noto Sans', sans-serif;
+}
 :root {
   --app-max-w: 720px;
 }
 
+/* 기본 html, body */
 html,
 body,
 #root {
@@ -13,10 +22,10 @@ body,
 }
 
 .container-app {
-  @apply max-w-[var(--app-max-w)] mx-auto px-4;
+  @apply mx-auto max-w-[var(--app-max-w)] px-4;
 }
 
-/* ------------- 테마 변수 ------------- */
+/* 테마 변수 */
 /* Light (기본) */
 :root {
   --bg: 0 0% 98%;
